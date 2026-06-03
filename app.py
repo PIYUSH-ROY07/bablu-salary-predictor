@@ -160,7 +160,7 @@ with col_form:
         "FMCG",
         "Other",
 ]
-
+        submit_button = st.form_submit_button("PREDICT SALARY")
 GROQ_MODEL = "llama-3.3-70b-versatile"
 
 
@@ -331,8 +331,7 @@ header_col, lottie_col = st.columns([3, 1])
 with header_col:
     st.title("Bablu Salary Predictor")
     st.caption("Enter your profile details below to get a market-aligned salary prediction.")
-with lottie_col:
-    render_lottie_animation(LOTTIE_ANIMATION_URL, height=300)
+with lottie_col
 
 left_col, right_col = st.columns(2)
 
