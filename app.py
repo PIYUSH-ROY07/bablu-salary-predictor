@@ -161,8 +161,14 @@ with col_form:
         "FMCG",
         "Other",
 ]
-        
+        submit_button = st.form_submit_button("PREDICT SALARY")
 GROQ_MODEL = "llama-3.3-70b-versatile"
+
+if submit_button:
+        with st.spinner('Analyzing market data...'):
+            
+            # Your Groq API key setup and prompt building goes here
+            client = Groq(api_key=st.secrets["GROQ_API_KEY"])
 
 
 def build_prompt(
