@@ -1,151 +1,164 @@
-import streamlit as st  # Your existing first line
-
-# ADD THIS LINE DIRECTLY BELOW
-st.set_page_config(layout="wide") 
-
-# ... rest of your code
 import re
 from typing import Optional
-
 import requests
 import streamlit as st
 from groq import Groq
 from streamlit_lottie import st_lottie
 
+# 1. THE SINGLE PAGE CONFIG (Must be first, and only used once)
 st.set_page_config(
     page_title="Bablu Salary Predictor",
     page_icon="💰",
     layout="wide",
 )
 
-LOTTIE_ANIMATION_URL = (
-    "https://assets3.lottiefiles.com/packages/lf20_0yfsb3a1.json"
-)
+# 2. MEMORIZE THE ANIMATION (Prevents reloading on every click)
+@st.cache_data
+def load_lottieurl(url):
+    r = requests.get(url)
+    if r.status_code != 200:
+        return None
+    return r.json()
 
-PROFESSIONAL_ROLES = [
-    "Software Engineer",
-    "Data Scientist",
-    "Product Manager",
-    "Business Analyst",
-    "Marketing Manager",
-    "Sales Executive",
-    "HR Manager",
-    "Accountant / CA",
-    "Civil Engineer",
-    "Mechanical Engineer",
-    "Electrical Engineer",
-    "Doctor / Physician",
-    "Nurse",
-    "Teacher / Professor",
-    "Graphic Designer",
-    "UI/UX Designer",
-    "Operations Manager",
-    "Supply Chain Manager",
-    "Customer Support Lead",
-    "Administrative Officer",
-    "Legal Associate",
-    "Architect",
-    "Content Writer",
-    "Digital Marketing Specialist",
-    "DevOps Engineer",
-    "Cybersecurity Analyst",
-    "Other",
+lottie_anim = load_lottieurl("https://assets3.lottiefiles.com/packages/lf20_0yfsb3a1.json")
+
+# 3. CREATE TWO COLUMNS (Form on left, Animation on right)
+col_form, col_anim = st.columns([1.5, 1])
+
+# 4. PUT ANIMATION IN RIGHT COLUMN WITH A STATIC KEY
+with col_anim:
+    if lottie_anim:
+        st_lottie(lottie_anim, height=450, key="salary_animation")
+
+# 5. START THE FORM ON THE LEFT COLUMN
+with col_form:
+    with st.form("salary_prediction_form"):
+        st.title("Bablu Salary Predictor")
+
+        PROFESSIONAL_ROLES = [
+        "Software Engineer",
+        "Data Scientist",
+        "Product Manager",
+        "Business Analyst",
+        "Marketing Manager",
+        "Sales Executive",
+        "HR Manager",
+        "Accountant / CA",
+        "Civil Engineer",
+        "Mechanical Engineer",
+        "Electrical Engineer",
+        "Doctor / Physician",
+        "Nurse",
+        "Teacher / Professor",
+        "Graphic Designer",
+        "UI/UX Designer",
+        "Operations Manager",
+        "Supply Chain Manager",
+        "Customer Support Lead",
+        "Administrative Officer",
+        "Legal Associate",
+        "Architect",
+        "Content Writer",
+        "Digital Marketing Specialist",
+        "DevOps Engineer",
+        "Cybersecurity Analyst",
+        "Other",
 ]
 
-INDIAN_STATES = [
-    "Andhra Pradesh",
-    "Arunachal Pradesh",
-    "Assam",
-    "Bihar",
-    "Chhattisgarh",
-    "Goa",
-    "Gujarat",
-    "Haryana",
-    "Himachal Pradesh",
-    "Jharkhand",
-    "Karnataka",
-    "Kerala",
-    "Madhya Pradesh",
-    "Maharashtra",
-    "Manipur",
-    "Meghalaya",
-    "Mizoram",
-    "Nagaland",
-    "Odisha",
-    "Punjab",
-    "Rajasthan",
-    "Sikkim",
-    "Tamil Nadu",
-    "Telangana",
-    "Tripura",
-    "Uttar Pradesh",
-    "Uttarakhand",
-    "West Bengal",
-    "Delhi (NCT)",
-    "Jammu and Kashmir",
-    "Ladakh",
-    "Puducherry",
-    "Chandigarh",
+        INDIAN_STATES = [
+        "Andhra Pradesh",
+        "Arunachal Pradesh",
+        "Assam",
+        "Bihar",
+        "Chhattisgarh",
+        "Goa",
+        "Gujarat",
+        "Haryana",
+        "Himachal Pradesh",
+        "Jharkhand",
+        "Karnataka",
+        "Kerala",
+        "Madhya Pradesh",
+        "Maharashtra",
+        "Manipur",
+        "Meghalaya",
+        "Mizoram",
+        "Nagaland",
+        "Odisha",
+        "Punjab",
+        "Rajasthan",
+        "Sikkim",
+        "Tamil Nadu",
+        "Telangana",
+        "Tripura",
+        "Uttar Pradesh",
+        "Uttarakhand",
+        "West Bengal",
+        "Delhi (NCT)",
+        "Jammu and Kashmir",
+        "Ladakh",
+        "Puducherry",
+        "Chandigarh",
 ]
 
-METRIC_OPTIONS = [
-    "Below 10th",
-    "10th / SSC",
-    "12th / HSC",
-    "Diploma (after 10th)",
-    "Diploma (after 12th)",
-    "ITI",
-    "Not applicable",
+        METRIC_OPTIONS = [
+        "Below 10th",
+        "10th / SSC",
+        "12th / HSC",
+        "Diploma (after 10th)",
+        "Diploma (after 12th)",
+        "ITI",
+        "Not applicable",
 ]
 
-COLLEGE_DEGREES = [
-    "None / Not applicable",
-    "B.A.",
-    "B.Com",
-    "B.Sc",
-    "B.Tech / B.E.",
-    "BBA",
-    "BCA",
-    "B.Pharm",
-    "B.Arch",
-    "LLB",
-    "MBBS",
-    "BDS",
-    "B.Ed",
-    "M.A.",
-    "M.Com",
-    "M.Sc",
-    "M.Tech / M.E.",
-    "MBA",
-    "MCA",
-    "M.Pharm",
-    "LLM",
-    "MD / MS",
-    "Ph.D",
-    "CA (Chartered Accountant)",
-    "CS (Company Secretary)",
-    "Other",
+        COLLEGE_DEGREES = [
+        "None / Not applicable",
+        "B.A.",
+        "B.Com",
+        "B.Sc",
+        "B.Tech / B.E.",
+        "BBA",
+        "BCA",
+        "B.Pharm",
+        "B.Arch",
+        "LLB",
+        "MBBS",
+        "BDS",
+        "B.Ed",
+        "M.A.",
+        "M.Com",
+        "M.Sc",
+        "M.Tech / M.E.",
+        "MBA",
+        "MCA",
+        "M.Pharm",
+        "LLM",
+        "MD / MS",
+        "Ph.D",
+        "CA (Chartered Accountant)",
+        "CS (Company Secretary)",
+        "Other",
 ]
 
-INDUSTRY_TYPES = [
-    "Information Technology (IT)",
-    "Healthcare & Pharmaceuticals",
-    "Banking & Financial Services",
-    "Manufacturing",
-    "Retail & E-commerce",
-    "Education & EdTech",
-    "Real Estate & Construction",
-    "Telecommunications",
-    "Media & Entertainment",
-    "Hospitality & Tourism",
-    "Logistics & Transportation",
-    "Energy & Utilities",
-    "Agriculture & Agri-business",
-    "Government / Public Sector",
-    "Consulting & Professional Services",
-    "Automotive",
-    "FMCG",
-    "Other",
+        INDUSTRY_TYPES = [
+        "Information Technology (IT)",
+        "Healthcare & Pharmaceuticals",
+        "Banking & Financial Services",
+        "Manufacturing",
+        "Retail & E-commerce",
+        "Education & EdTech",
+        "Real Estate & Construction",
+        "Telecommunications",
+        "Media & Entertainment",
+        "Hospitality & Tourism",
+        "Logistics & Transportation",
+        "Energy & Utilities",
+        "Agriculture & Agri-business",
+        "Government / Public Sector",
+        "Consulting & Professional Services",
+        "Automotive",
+        "FMCG",
+        "Other",
 ]
 
 GROQ_MODEL = "llama-3.3-70b-versatile"
