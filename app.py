@@ -331,7 +331,6 @@ header_col, lottie_col = st.columns([3, 1])
 with header_col:
     st.title("Bablu Salary Predictor")
     st.caption("Enter your profile details below to get a market-aligned salary prediction.")
-with lottie_col
 
 left_col, right_col = st.columns(2)
 
