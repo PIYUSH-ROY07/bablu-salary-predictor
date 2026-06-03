@@ -164,7 +164,7 @@ with col_form:
         submit_button = st.form_submit_button("PREDICT SALARY")
 GROQ_MODEL = "llama-3.3-70b-versatile"
 
-    if submit_button:
+if submit_button:
         with st.spinner('Analyzing market data...'):
             
             # Your Groq API key setup and prompt building goes here
