@@ -161,7 +161,7 @@ with col_form:
         "FMCG",
         "Other",
 ]
-        submit_button = st.form_submit_button("PREDICT SALARY")
+        
 GROQ_MODEL = "llama-3.3-70b-versatile"
 
 
